@@ -9,6 +9,6 @@ fi
 # "--bin" can be specified multiple times for each directory in "bin/*" or workspaces
 cargo build \
 --release \
---bin aws-volume-provisioner
+--bin aws-ip-provisioner
 
-./target/release/aws-volume-provisioner --help
+./target/release/aws-ip-provisioner --help

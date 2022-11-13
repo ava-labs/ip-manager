@@ -161,7 +161,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --release --bin aws-volume-provisioner --target ${{ matrix.job.target }}
+          args: --release --bin aws-ip-provisioner --target ${{ matrix.job.target }}
 
       - name: Compress binaries
         id: release_artifacts
@@ -172,18 +172,18 @@ jobs:
         run: |
           if [ "$PLATFORM_NAME" == "linux" ]; then
 
-            ./target/${TARGET}/release/aws-volume-provisioner --help
-            cp ./target/${TARGET}/release/aws-volume-provisioner aws-volume-provisioner.${TARGET}
-            echo "file_name_aws_volume_provisioner=aws-volume-provisioner.${TARGET}" >> $GITHUB_OUTPUT
-            tar -czvf aws-volume-provisioner_${TARGET}.tar.gz -C ./target/${TARGET}/release aws-volume-provisioner
-            echo "file_name_aws_volume_provisioner_tar_gz=aws-volume-provisioner_${TARGET}.tar.gz" >> $GITHUB_OUTPUT
+            ./target/${TARGET}/release/aws-ip-provisioner --help
+            cp ./target/${TARGET}/release/aws-ip-provisioner aws-ip-provisioner.${TARGET}
+            echo "file_name_aws_ip_provisioner=aws-ip-provisioner.${TARGET}" >> $GITHUB_OUTPUT
+            tar -czvf aws-ip-provisioner_${TARGET}.tar.gz -C ./target/${TARGET}/release aws-ip-provisioner
+            echo "file_name_aws_ip_provisioner_tar_gz=aws-ip-provisioner_${TARGET}.tar.gz" >> $GITHUB_OUTPUT
 
           elif [ "$PLATFORM_NAME" == "darwin" ]; then
 
-            cp ./target/${TARGET}/release/aws-volume-provisioner aws-volume-provisioner.${TARGET}
-            echo "file_name_aws_volume_provisioner=aws-volume-provisioner.${TARGET}" >> $GITHUB_OUTPUT
-            gtar -czvf aws-volume-provisioner_${TARGET}.tar.gz -C ./target/${TARGET}/release aws-volume-provisioner
-            echo "file_name_aws_volume_provisioner_tar_gz=aws-volume-provisioner_${TARGET}.tar.gz" >> $GITHUB_OUTPUT
+            cp ./target/${TARGET}/release/aws-ip-provisioner aws-ip-provisioner.${TARGET}
+            echo "file_name_aws_ip_provisioner=aws-ip-provisioner.${TARGET}" >> $GITHUB_OUTPUT
+            gtar -czvf aws-ip-provisioner_${TARGET}.tar.gz -C ./target/${TARGET}/release aws-ip-provisioner
+            echo "file_name_aws_ip_provisioner_tar_gz=aws-ip-provisioner_${TARGET}.tar.gz" >> $GITHUB_OUTPUT
 
           else
 
@@ -203,8 +203,8 @@ jobs:
           prerelease: true
           body: Latest builds from the last commit.
           files: |
-            ${{ steps.release_artifacts.outputs.file_name_aws_volume_provisioner }}
-            ${{ steps.release_artifacts.outputs.file_name_aws_volume_provisioner_tar_gz }}
+            ${{ steps.release_artifacts.outputs.file_name_aws_ip_provisioner }}
+            ${{ steps.release_artifacts.outputs.file_name_aws_ip_provisioner_tar_gz }}
 
       # release only for tags
       # https://github.com/softprops/action-gh-release
@@ -219,5 +219,5 @@ jobs:
           prerelease: true
           body: Release builds for ${{ github.ref_name }}.
           files: |
-            ${{ steps.release_artifacts.outputs.file_name_aws_volume_provisioner }}
-            ${{ steps.release_artifacts.outputs.file_name_aws_volume_provisioner_tar_gz }}
+            ${{ steps.release_artifacts.outputs.file_name_aws_ip_provisioner }}
+            ${{ steps.release_artifacts.outputs.file_name_aws_ip_provisioner_tar_gz }}
