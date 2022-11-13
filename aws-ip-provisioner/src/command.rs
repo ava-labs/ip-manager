@@ -22,7 +22,7 @@ The EC2 instance is automatically fetched.
 
 Commands may run multiple times with idempotency.
 
-Requires IAM instance role of: ec2:DescribeVolumes, ec2:CreateVolume, and ec2:AttachVolume.
+Requires IAM instance role of: ec2:AllocateAddress, ec2:AssociateAddress, and ec2:DescribeAddresses.
 
 e.g.,
 
