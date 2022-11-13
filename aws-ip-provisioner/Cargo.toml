@@ -13,7 +13,7 @@ name = "aws-ip-provisioner"
 path = "src/main.rs"
 
 [dependencies]
-aws-manager = "0.21.4" # https://crates.io/crates/aws-manager/versions
+aws-manager = "0.21.5" # https://crates.io/crates/aws-manager/versions
 aws-sdk-ec2 = "0.21.0"
 chrono = "0.4.23"
 clap = { version = "4.0.23", features = ["cargo", "derive"] }

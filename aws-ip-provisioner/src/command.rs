@@ -150,12 +150,12 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
         eip
     );
     let eips = ec2_manager
-        .describe_eips(&ec2_instance_id)
+        .describe_eips_by_instance_id(&ec2_instance_id)
         .await
         .map_err(|e| {
             Error::new(
                 ErrorKind::Other,
-                format!("failed ec2_manager.describe_eips '{}'", e),
+                format!("failed ec2_manager.describe_eips_by_instance_id '{}'", e),
             )
         })?;
     let need_associate_eip = if eips.is_empty() {
