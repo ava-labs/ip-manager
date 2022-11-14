@@ -139,7 +139,11 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
             .map_err(|e| {
                 Error::new(
                     ErrorKind::Other,
-                    format!("failed ec2_manager.allocate_eip '{}'", e),
+                    format!(
+                        "failed ec2_manager.allocate_eip {} (retryable {})",
+                        e.message(),
+                        e.is_retryable()
+                    ),
                 )
             })?
     };
@@ -155,7 +159,11 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
         .map_err(|e| {
             Error::new(
                 ErrorKind::Other,
-                format!("failed ec2_manager.describe_eips_by_instance_id '{}'", e),
+                format!(
+                    "failed ec2_manager.describe_eips_by_instance_id {} (retryable {})",
+                    e.message(),
+                    e.is_retryable()
+                ),
             )
         })?;
     let need_associate_eip = if eips.is_empty() {
@@ -185,7 +193,11 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
             .map_err(|e| {
                 Error::new(
                     ErrorKind::Other,
-                    format!("failed ec2_manager.associate_eip '{}'", e),
+                    format!(
+                        "failed ec2_manager.associate_eip {} (retryable {})",
+                        e.message(),
+                        e.is_retryable()
+                    ),
                 )
             })?;
     }
