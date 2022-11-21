@@ -1,6 +1,6 @@
 [package]
 name = "aws-ip-provisioner"
-version = "0.0.0"
+version = "0.0.1"
 edition = "2021"
 rust-version = "1.65"
 description = "AWS IP provisioner"
@@ -13,14 +13,14 @@ name = "aws-ip-provisioner"
 path = "src/main.rs"
 
 [dependencies]
-aws-manager = "0.21.5" # https://crates.io/crates/aws-manager/versions
+aws-manager = "0.21.6" # https://crates.io/crates/aws-manager/versions
 aws-sdk-ec2 = "0.21.0"
 chrono = "0.4.23"
-clap = { version = "4.0.23", features = ["cargo", "derive"] }
+clap = { version = "4.0.26", features = ["cargo", "derive"] }
 command-manager = "0.0.1"
 env_logger = "0.9.3"
 log = "0.4.17"
 path-clean = { version = "0.1.0", optional = false }
 random-manager = "0.0.1"
-tokio = { version = "1.21.2", features = ["full"] }
+tokio = { version = "1.22.0", features = ["full"] }
 walkdir = { version = "2.3.2", optional = false }
