@@ -18,7 +18,7 @@ aws-sdk-ec2 = "0.21.0"
 chrono = "0.4.23"
 clap = { version = "4.0.26", features = ["cargo", "derive"] }
 command-manager = "0.0.1"
-env_logger = "0.9.3"
+env_logger = "0.10.0"
 log = "0.4.17"
 path-clean = { version = "0.1.0", optional = false }
 random-manager = "0.0.1"
