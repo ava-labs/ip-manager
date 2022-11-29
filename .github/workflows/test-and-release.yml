@@ -179,15 +179,15 @@ jobs:
 
             cp ./target/${TARGET}/release/aws-ip-provisioner aws-ip-provisioner.${TARGET}
             echo "file_name_aws_ip_provisioner=aws-ip-provisioner.${TARGET}" >> $GITHUB_OUTPUT
-            tar -czvf aws-ip-provisioner_${TARGET}.tar.gz -C ./target/${TARGET}/release aws-ip-provisioner
-            echo "file_name_aws_ip_provisioner_tar_gz=aws-ip-provisioner_${TARGET}.tar.gz" >> $GITHUB_OUTPUT
+            tar -czvf aws-ip-provisioner.${TARGET}.tar.gz -C ./target/${TARGET}/release aws-ip-provisioner
+            echo "file_name_aws_ip_provisioner_tar_gz=aws-ip-provisioner.${TARGET}.tar.gz" >> $GITHUB_OUTPUT
 
           elif [ "$PLATFORM_NAME" == "darwin" ]; then
 
             cp ./target/${TARGET}/release/aws-ip-provisioner aws-ip-provisioner.${TARGET}
             echo "file_name_aws_ip_provisioner=aws-ip-provisioner.${TARGET}" >> $GITHUB_OUTPUT
-            gtar -czvf aws-ip-provisioner_${TARGET}.tar.gz -C ./target/${TARGET}/release aws-ip-provisioner
-            echo "file_name_aws_ip_provisioner_tar_gz=aws-ip-provisioner_${TARGET}.tar.gz" >> $GITHUB_OUTPUT
+            gtar -czvf aws-ip-provisioner.${TARGET}.tar.gz -C ./target/${TARGET}/release aws-ip-provisioner
+            echo "file_name_aws_ip_provisioner_tar_gz=aws-ip-provisioner.${TARGET}.tar.gz" >> $GITHUB_OUTPUT
 
           else
 
