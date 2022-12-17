@@ -1,8 +1,8 @@
 [package]
 name = "aws-ip-provisioner"
-version = "0.0.8" # https://github.com/gyuho/ip-manager/releases
+version = "0.0.9" # https://github.com/gyuho/ip-manager/releases
 edition = "2021"
-rust-version = "1.65"
+rust-version = "1.66"
 description = "AWS IP provisioner"
 repository = "https://github.com/gyuho/ip-manager"
 readme = "README.md"
@@ -13,7 +13,7 @@ name = "aws-ip-provisioner"
 path = "src/main.rs"
 
 [dependencies]
-aws-manager = "0.22.1" # https://crates.io/crates/aws-manager/versions
+aws-manager = "0.22.2" # https://crates.io/crates/aws-manager/versions
 aws-sdk-ec2 = "0.22.0"
 chrono = "0.4.23"
 clap = { version = "4.0.29", features = ["cargo", "derive"] }
@@ -21,6 +21,6 @@ command-manager = "0.0.1"
 env_logger = "0.10.0"
 log = "0.4.17"
 path-clean = { version = "0.1.0", optional = false }
-random-manager = "0.0.1"
+random-manager = "0.0.2"
 tokio = { version = "1.23.0", features = ["full"] }
 walkdir = { version = "2.3.2", optional = false }
