@@ -29,8 +29,10 @@ e.g.,
 $ aws-ip-provisioner \
 --log-level=info \
 --initial-wait-random-seconds=70 \
---kind-tag=aws-ip-provisioner \
---id-tag=TEST-ID \
+--id-tag-key=Id \
+--id-tag-value=TEST-ID \
+--kind-tag-key=Kind \
+--kind-tag-value=aws-ip-provisioner \
 --mounted-eip-file-path=/data/eip.yaml
 
 ",
@@ -55,16 +57,32 @@ $ aws-ip-provisioner \
                 .default_value("5"),
         )
         .arg(
-            Arg::new("KIND_TAG")
-                .long("kind-tag")
-                .help("Sets the kind tag")
+            Arg::new("ID_TAG_KEY")
+                .long("id-tag-key")
+                .help("Sets the key for the EC2 instance 'Id' tag (must be set via EC2 tags, or used for EIP creation)")
+                .required(true)
+                .num_args(1)
+                .default_value("Id"),
+        )
+        .arg(
+            Arg::new("ID_TAG_VALUE")
+                .long("id-tag-value")
+                .help("Sets the value for the EC2 instance 'Id' tag key (must be set via EC2 tags)")
                 .required(true)
                 .num_args(1),
         )
         .arg(
-            Arg::new("ID_TAG")
-                .long("id-tag")
-                .help("Sets the Id tag")
+            Arg::new("KIND_TAG_KEY")
+                .long("kind-tag-key")
+                .help("Sets the key for the EC2 instance 'Kind' tag (must be set via EC2 tags, or used for EIP creation)")
+                .required(true)
+                .num_args(1)
+                .default_value("Kind"),
+        )
+        .arg(
+            Arg::new("KIND_TAG_VALUE")
+                .long("kind-tag-value")
+                .help("Sets the value for the EC2 instance 'Kind' tag key (must be set via EC2 tags)")
                 .required(true)
                 .num_args(1),
         )
@@ -83,15 +101,18 @@ pub struct Flags {
     pub log_level: String,
     pub initial_wait_random_seconds: u32,
 
-    pub kind: String,
-    pub id: String,
+    pub id_tag_key: String,
+    pub id_tag_value: String,
+    pub kind_tag_key: String,
+    pub kind_tag_value: String,
+
     pub mounted_eip_file_path: String,
 }
 
 pub async fn execute(opts: Flags) -> io::Result<()> {
     println!("{} version: {}", NAME, crate_version!());
 
-    // ref. https://github.com/env-logger-rs/env_logger/issues/47
+    // ref. <https://github.com/env-logger-rs/env_logger/issues/47>
     env_logger::init_from_env(
         env_logger::Env::default().filter_or(env_logger::DEFAULT_FILTER_ENV, opts.log_level),
     );
@@ -134,7 +155,12 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
     } else {
         log::info!("mounted EIP file does not exist in the mounted volume path -- creating one!");
         ec2_manager
-            .allocate_eip(&opts.kind, &opts.id)
+            .allocate_eip(
+                &opts.id_tag_key,
+                &opts.id_tag_value,
+                &opts.kind_tag_key,
+                &opts.kind_tag_value,
+            )
             .await
             .map_err(|e| {
                 Error::new(

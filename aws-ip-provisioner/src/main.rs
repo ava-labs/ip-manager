@@ -18,8 +18,11 @@ async fn main() -> io::Result<()> {
         .unwrap_or(&5)
         .clone();
 
-    let kind = matches.get_one::<String>("KIND_TAG").unwrap().clone();
-    let id = matches.get_one::<String>("ID_TAG").unwrap().clone();
+    let id_tag_key = matches.get_one::<String>("ID_TAG_KEY").unwrap().clone();
+    let id_tag_value = matches.get_one::<String>("ID_TAG_VALUE").unwrap().clone();
+    let kind_tag_key = matches.get_one::<String>("KIND_TAG_KEY").unwrap().clone();
+    let kind_tag_value = matches.get_one::<String>("KIND_TAG_VALUE").unwrap().clone();
+
     let mounted_eip_file_path = matches
         .get_one::<String>("MOUNTED_EIP_FILE_PATH")
         .unwrap_or(&String::from("/data"))
@@ -28,8 +31,10 @@ async fn main() -> io::Result<()> {
     let opts = command::Flags {
         log_level,
         initial_wait_random_seconds,
-        kind,
-        id,
+        id_tag_key,
+        id_tag_value,
+        kind_tag_key,
+        kind_tag_value,
         mounted_eip_file_path,
     };
     command::execute(opts).await
