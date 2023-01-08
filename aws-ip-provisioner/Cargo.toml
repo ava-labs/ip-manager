@@ -1,6 +1,6 @@
 [package]
 name = "aws-ip-provisioner"
-version = "0.0.18" # https://github.com/gyuho/ip-manager/releases
+version = "0.0.19" # https://github.com/gyuho/ip-manager/releases
 edition = "2021"
 rust-version = "1.66"
 description = "AWS IP provisioner"
@@ -18,4 +18,4 @@ clap = { version = "4.0.32", features = ["cargo", "derive"] }
 env_logger = "0.10.0"
 log = "0.4.17"
 random-manager = "0.0.2"
-tokio = { version = "1.24.0", features = ["full"] }
+tokio = { version = "1.24.1", features = ["full"] }
