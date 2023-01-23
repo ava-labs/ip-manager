@@ -41,8 +41,7 @@ pub async fn download(
         log::info!("fetching the latest git tags");
         let mut release_info = ReleaseResponse::default();
         for round in 0..20 {
-            let info = match crate::github::fetch_latest_release("ava-labs", "ip-manager").await
-            {
+            let info = match crate::github::fetch_latest_release("ava-labs", "ip-manager").await {
                 Ok(v) => v,
                 Err(e) => {
                     log::warn!(
