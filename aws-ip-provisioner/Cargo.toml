@@ -1,10 +1,10 @@
 [package]
 name = "aws-ip-provisioner"
-version = "0.0.23" # https://github.com/gyuho/ip-manager/releases
+version = "0.0.24" # https://github.com/ava-labs/ip-manager/releases
 edition = "2021"
 rust-version = "1.66"
 description = "AWS IP provisioner"
-repository = "https://github.com/gyuho/ip-manager"
+repository = "https://github.com/ava-labs/ip-manager"
 readme = "README.md"
 license = "Apache-2.0"
 
