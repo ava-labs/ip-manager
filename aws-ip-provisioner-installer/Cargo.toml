@@ -1,11 +1,11 @@
 [package]
 name = "aws-ip-provisioner-installer"
-version = "0.0.24" # https://github.com/ava-labs/ip-manager/releases
+version = "0.0.25" # https://github.com/ava-labs/ip-manager/releases
 edition = "2021"
 rust-version = "1.66"
 publish = true
 description = "aws-ip-provisioner installer"
-repository = "https://github.com/ava-labs/aws-ip-provisioner-installer"
+repository = "https://github.com/ava-labs/ip-manager"
 readme = "README.md"
 license = "Apache-2.0"
 
