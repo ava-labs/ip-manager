@@ -1,4 +1,5 @@
 [workspace]
 members = [
-    "aws-ip-provisioner"
+    "aws-ip-provisioner",
+    "aws-ip-provisioner-installer"
 ]
