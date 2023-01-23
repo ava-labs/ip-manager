@@ -1,2 +1,2 @@
 
-AWS EBS volume provisioner.
+AWS IP provisioner.
