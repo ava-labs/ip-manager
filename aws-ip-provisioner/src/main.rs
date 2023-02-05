@@ -22,6 +22,8 @@ async fn main() -> io::Result<()> {
     let id_tag_value = matches.get_one::<String>("ID_TAG_VALUE").unwrap().clone();
     let kind_tag_key = matches.get_one::<String>("KIND_TAG_KEY").unwrap().clone();
     let kind_tag_value = matches.get_one::<String>("KIND_TAG_VALUE").unwrap().clone();
+    let asg_tag_key = matches.get_one::<String>("ASG_TAG_KEY").unwrap().clone();
+    let asg_tag_value = matches.get_one::<String>("ASG_TAG_VALUE").unwrap().clone();
 
     let mounted_eip_file_path = matches
         .get_one::<String>("MOUNTED_EIP_FILE_PATH")
@@ -35,6 +37,8 @@ async fn main() -> io::Result<()> {
         id_tag_value,
         kind_tag_key,
         kind_tag_value,
+        asg_tag_key,
+        asg_tag_value,
         mounted_eip_file_path,
     };
     command::execute(opts).await

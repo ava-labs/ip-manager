@@ -33,6 +33,8 @@ $ aws-ip-provisioner \
 --id-tag-value=TEST-ID \
 --kind-tag-key=Kind \
 --kind-tag-value=aws-ip-provisioner \
+--asg-tag-key=autoscaling:groupName \
+--asg-tag-value=dev-machine-202301-HsvtyG-amd64-1 \
 --mounted-eip-file-path=/data/eip.yaml
 
 ",
@@ -59,7 +61,7 @@ $ aws-ip-provisioner \
         .arg(
             Arg::new("ID_TAG_KEY")
                 .long("id-tag-key")
-                .help("Sets the key for the EC2 instance 'Id' tag (must be set via EC2 tags, or used for EIP creation)")
+                .help("Sets the key for the elastic IP 'Id' tag (must be set via EC2 tags, or used for EIP creation)")
                 .required(true)
                 .num_args(1)
                 .default_value("Id"),
@@ -67,14 +69,14 @@ $ aws-ip-provisioner \
         .arg(
             Arg::new("ID_TAG_VALUE")
                 .long("id-tag-value")
-                .help("Sets the value for the EC2 instance 'Id' tag key (must be set via EC2 tags)")
+                .help("Sets the value for the elastic IP 'Id' tag key (must be set via EC2 tags)")
                 .required(true)
                 .num_args(1),
         )
         .arg(
             Arg::new("KIND_TAG_KEY")
                 .long("kind-tag-key")
-                .help("Sets the key for the EC2 instance 'Kind' tag (must be set via EC2 tags, or used for EIP creation)")
+                .help("Sets the key for the elastic IP 'Kind' tag (must be set via EC2 tags, or used for EIP creation)")
                 .required(true)
                 .num_args(1)
                 .default_value("Kind"),
@@ -82,7 +84,22 @@ $ aws-ip-provisioner \
         .arg(
             Arg::new("KIND_TAG_VALUE")
                 .long("kind-tag-value")
-                .help("Sets the value for the EC2 instance 'Kind' tag key (must be set via EC2 tags)")
+                .help("Sets the value for the elastic IP 'Kind' tag key (must be set via EC2 tags)")
+                .required(true)
+                .num_args(1),
+        )
+        .arg(
+            Arg::new("ASG_TAG_KEY")
+                .long("asg-tag-key")
+                .help("Sets the key for the elastic IP asg name tag (must be set via EC2 tags, or used for elastic IP creation)")
+                .required(true)
+                .num_args(1)
+                .default_value("autoscaling:groupName"),
+        )
+        .arg(
+            Arg::new("ASG_TAG_VALUE")
+                .long("asg-tag-value")
+                .help("Sets the value for the elastic IP asg name tag key (must be set via EC2 tags)")
                 .required(true)
                 .num_args(1),
         )
@@ -105,6 +122,8 @@ pub struct Flags {
     pub id_tag_value: String,
     pub kind_tag_key: String,
     pub kind_tag_value: String,
+    pub asg_tag_key: String,
+    pub asg_tag_value: String,
 
     pub mounted_eip_file_path: String,
 }
@@ -160,6 +179,8 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
                 &opts.id_tag_value,
                 &opts.kind_tag_key,
                 &opts.kind_tag_value,
+                &opts.asg_tag_key,
+                &opts.asg_tag_value,
             )
             .await
             .map_err(|e| {
