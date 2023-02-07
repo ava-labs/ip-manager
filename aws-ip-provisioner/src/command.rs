@@ -2,6 +2,7 @@ use std::{
     env,
     io::{self, Error, ErrorKind},
     path::Path,
+    sync::Arc,
 };
 
 use aws_manager::{self, ec2};
@@ -33,8 +34,8 @@ $ aws-ip-provisioner \
 --id-tag-value=TEST-ID \
 --kind-tag-key=Kind \
 --kind-tag-value=aws-ip-provisioner \
+--ec2-tag-asg-name-key=ASG_NAME \
 --asg-tag-key=autoscaling:groupName \
---asg-tag-value=dev-machine-202301-HsvtyG-amd64-1 \
 --mounted-eip-file-path=/data/eip.yaml
 
 ",
@@ -89,19 +90,19 @@ $ aws-ip-provisioner \
                 .num_args(1),
         )
         .arg(
+            Arg::new("EC2_TAG_ASG_NAME_KEY")
+                .long("ec2-tag-asg-name-key")
+                .help("Sets the key of the ASG name tag")
+                .required(true)
+                .num_args(1),
+        )
+        .arg(
             Arg::new("ASG_TAG_KEY")
                 .long("asg-tag-key")
                 .help("Sets the key for the elastic IP asg name tag (must be set via EC2 tags, or used for elastic IP creation)")
                 .required(true)
                 .num_args(1)
                 .default_value("autoscaling:groupName"),
-        )
-        .arg(
-            Arg::new("ASG_TAG_VALUE")
-                .long("asg-tag-value")
-                .help("Sets the value for the elastic IP asg name tag key (must be set via EC2 tags)")
-                .required(true)
-                .num_args(1),
         )
         .arg(
             Arg::new("MOUNTED_EIP_FILE_PATH")
@@ -122,8 +123,8 @@ pub struct Flags {
     pub id_tag_value: String,
     pub kind_tag_key: String,
     pub kind_tag_value: String,
+    pub ec2_tag_asg_name_key: String,
     pub asg_tag_key: String,
-    pub asg_tag_value: String,
 
     pub mounted_eip_file_path: String,
 }
@@ -146,6 +147,31 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
             format!("failed fetch_instance_id '{}'", e),
         )
     })?;
+    let ec2_instance_id_arc = Arc::new(ec2_instance_id.clone());
+
+    log::info!("fetching the tag value for {}", opts.ec2_tag_asg_name_key);
+    let tags = ec2_manager
+        .fetch_tags(ec2_instance_id_arc)
+        .await
+        .map_err(|e| Error::new(ErrorKind::Other, format!("failed fetch_tags {}", e)))?;
+
+    let mut asg_tag_value = String::new();
+    for c in tags {
+        let k = c.key().unwrap();
+        let v = c.value().unwrap();
+
+        log::info!("EC2 tag key='{}', value='{}'", k, v);
+        if k == opts.ec2_tag_asg_name_key {
+            asg_tag_value = v.to_string();
+            break;
+        }
+    }
+    if asg_tag_value.is_empty() {
+        return Err(Error::new(
+            ErrorKind::Other,
+            format!("{} is empty", opts.ec2_tag_asg_name_key),
+        ));
+    }
 
     let sleep_sec = if opts.initial_wait_random_seconds > 0 {
         random_manager::u32() % opts.initial_wait_random_seconds
@@ -180,7 +206,7 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
                 &opts.kind_tag_key,
                 &opts.kind_tag_value,
                 &opts.asg_tag_key,
-                &opts.asg_tag_value,
+                &asg_tag_value,
             )
             .await
             .map_err(|e| {
