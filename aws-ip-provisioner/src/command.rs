@@ -1,4 +1,5 @@
 use std::{
+    collections::HashMap,
     env,
     io::{self, Error, ErrorKind},
     path::Path,
@@ -200,14 +201,15 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
     } else {
         log::info!("mounted EIP file does not exist in the mounted volume path -- creating one!");
         ec2_manager
-            .allocate_eip(
-                &opts.id_tag_key,
-                &opts.id_tag_value,
-                &opts.kind_tag_key,
-                &opts.kind_tag_value,
-                &opts.asg_tag_key,
-                &asg_tag_value,
-            )
+            .allocate_eip(HashMap::from([
+                (opts.id_tag_key.to_string(), opts.id_tag_value.to_string()),
+                (String::from("Name"), asg_tag_value.clone()),
+                (opts.asg_tag_key.to_string(), asg_tag_value.clone()),
+                (
+                    opts.kind_tag_key.to_string(),
+                    opts.kind_tag_value.to_string(),
+                ),
+            ]))
             .await
             .map_err(|e| {
                 Error::new(
