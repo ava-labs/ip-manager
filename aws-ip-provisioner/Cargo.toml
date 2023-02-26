@@ -1,6 +1,6 @@
 [package]
 name = "aws-ip-provisioner"
-version = "0.0.43" # https://github.com/ava-labs/ip-manager/releases
+version = "0.0.44" # https://github.com/ava-labs/ip-manager/releases
 edition = "2021"
 rust-version = "1.67"
 description = "AWS IP provisioner"
