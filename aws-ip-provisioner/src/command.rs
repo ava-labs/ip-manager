@@ -3,7 +3,6 @@ use std::{
     env,
     io::{self, Error, ErrorKind},
     path::Path,
-    sync::Arc,
 };
 
 use aws_manager::{self, ec2};
