@@ -148,11 +148,10 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
             format!("failed fetch_instance_id '{}'", e),
         )
     })?;
-    let ec2_instance_id_arc = Arc::new(ec2_instance_id.clone());
 
     log::info!("fetching the tag value for {}", opts.ec2_tag_asg_name_key);
     let tags = ec2_manager
-        .fetch_tags(ec2_instance_id_arc)
+        .fetch_tags(&ec2_instance_id)
         .await
         .map_err(|e| Error::new(ErrorKind::Other, format!("failed fetch_tags {}", e)))?;
 
