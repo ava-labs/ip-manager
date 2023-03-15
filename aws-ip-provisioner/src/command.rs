@@ -138,7 +138,7 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
     );
     log::info!("starting 'aws-ip-provisioner'");
 
-    let shared_config = aws_manager::load_config(None).await?;
+    let shared_config = aws_manager::load_config(None, Some(Duration::from_secs(30))).await?;
     let ec2_manager = ec2::Manager::new(&shared_config);
 
     let ec2_instance_id = ec2::metadata::fetch_instance_id().await.map_err(|e| {
