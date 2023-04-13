@@ -215,7 +215,7 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
                     format!(
                         "failed ec2_manager.allocate_eip {} (retryable {})",
                         e.message(),
-                        e.is_retryable()
+                        e.retryable()
                     ),
                 )
             })?
@@ -235,7 +235,7 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
                 format!(
                     "failed ec2_manager.describe_eips_by_instance_id {} (retryable {})",
                     e.message(),
-                    e.is_retryable()
+                    e.retryable()
                 ),
             )
         })?;
@@ -269,7 +269,7 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
                     format!(
                         "failed ec2_manager.associate_eip {} (retryable {})",
                         e.message(),
-                        e.is_retryable()
+                        e.retryable()
                     ),
                 )
             })?;
