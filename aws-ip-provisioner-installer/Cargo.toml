@@ -1,6 +1,6 @@
 [package]
 name = "aws-ip-provisioner-installer"
-version = "0.0.78" # https://github.com/ava-labs/ip-manager/releases
+version = "0.0.79" # https://github.com/ava-labs/ip-manager/releases
 edition = "2021"
 rust-version = "1.69"
 publish = true
