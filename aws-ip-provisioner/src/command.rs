@@ -113,6 +113,15 @@ $ aws-ip-provisioner \
                 .default_value("autoscaling:groupName"),
         )
         .arg(
+            Arg::new("DESCRIBE_LOCAL_RETRIES")
+                .long("describe-local-retries")
+                .help("Sets the number of describe call retries until it finds one before creating one")
+                .required(false)
+                .value_parser(value_parser!(usize))
+                .num_args(1)
+                .default_value("15"),
+        )
+        .arg(
             Arg::new("MOUNTED_EIP_FILE_PATH")
                 .long("mounted-eip-file-path")
                 .help("Sets the file path to store Elastic IP information mapped to this volume path")
@@ -134,6 +143,8 @@ pub struct Flags {
     pub kind_tag_value: String,
     pub ec2_tag_asg_name_key: String,
     pub asg_tag_key: String,
+
+    pub describe_local_retries: usize,
 
     pub mounted_eip_file_path: String,
 }
@@ -239,29 +250,39 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
         "checking the instance has already been associated with elastic IP {:?}",
         eip
     );
-    let eips = ec2_manager
-        .describe_eips_by_instance_id(&ec2_instance_id)
-        .await
-        .map_err(|e| {
-            Error::new(
-                ErrorKind::Other,
-                format!(
-                    "failed ec2_manager.describe_eips_by_instance_id {} (retryable {})",
-                    e.message(),
-                    e.retryable()
-                ),
-            )
-        })?;
-    let need_associate_eip = if eips.is_empty() {
+    let mut local_eips = Vec::new();
+    for i in 0..opts.describe_local_retries {
+        log::info!("[{i}] trying describe_eips_by_instance_id");
+        local_eips = ec2_manager
+            .describe_eips_by_instance_id(&ec2_instance_id)
+            .await
+            .map_err(|e| {
+                Error::new(
+                    ErrorKind::Other,
+                    format!(
+                        "failed ec2_manager.describe_eips_by_instance_id {} (retryable {})",
+                        e.message(),
+                        e.retryable()
+                    ),
+                )
+            })?;
+        if !local_eips.is_empty() {
+            break;
+        }
+
+        log::info!("no local EIP found... retrying in case of inconsistent/stale API response");
+        sleep(Duration::from_secs(3)).await;
+    }
+    let need_associate_eip = if local_eips.is_empty() {
         log::info!(
             "no existing EIP found, now associating {:?} to {ec2_instance_id}",
             eip
         );
         true
     } else {
-        log::info!("existing EIPs found {:?}", eips);
+        log::info!("existing EIPs found {:?}", local_eips);
         let mut found = false;
-        for ev in eips.iter() {
+        for ev in local_eips.iter() {
             log::info!("address {:?}", ev);
             let allocation_id = ev.allocation_id.to_owned().unwrap();
             if allocation_id == eip.allocation_id {
