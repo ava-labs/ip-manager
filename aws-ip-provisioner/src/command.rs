@@ -113,13 +113,13 @@ $ aws-ip-provisioner \
                 .default_value("autoscaling:groupName"),
         )
         .arg(
-            Arg::new("DESCRIBE_LOCAL_RETRIES")
+            Arg::new("FIND_REUSABLE_RETRIES")
                 .long("describe-local-retries")
                 .help("Sets the number of describe call retries until it finds one before creating one")
                 .required(false)
                 .value_parser(value_parser!(usize))
                 .num_args(1)
-                .default_value("15"),
+                .default_value("10"),
         )
         .arg(
             Arg::new("MOUNTED_EIP_FILE_PATH")
@@ -144,7 +144,7 @@ pub struct Flags {
     pub ec2_tag_asg_name_key: String,
     pub asg_tag_key: String,
 
-    pub describe_local_retries: usize,
+    pub find_reusable_retries: usize,
 
     pub mounted_eip_file_path: String,
 }
@@ -251,7 +251,7 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
         eip
     );
     let mut local_eips = Vec::new();
-    for i in 0..opts.describe_local_retries {
+    for i in 0..opts.find_reusable_retries {
         log::info!("[{i}] trying describe_eips_by_instance_id");
         local_eips = ec2_manager
             .describe_eips_by_instance_id(&ec2_instance_id)

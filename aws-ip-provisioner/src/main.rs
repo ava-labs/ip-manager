@@ -28,9 +28,9 @@ async fn main() -> io::Result<()> {
         .clone();
     let asg_tag_key = matches.get_one::<String>("ASG_TAG_KEY").unwrap().clone();
 
-    let describe_local_retries = matches
-        .get_one::<usize>("DESCRIBE_LOCAL_RETRIES")
-        .unwrap_or(&15)
+    let find_reusable_retries = matches
+        .get_one::<usize>("FIND_REUSABLE_RETRIES")
+        .unwrap_or(&10)
         .clone();
 
     let mounted_eip_file_path = matches
@@ -48,7 +48,7 @@ async fn main() -> io::Result<()> {
         kind_tag_value,
         ec2_tag_asg_name_key,
         asg_tag_key,
-        describe_local_retries,
+        find_reusable_retries,
         mounted_eip_file_path,
     };
     command::execute(opts).await
