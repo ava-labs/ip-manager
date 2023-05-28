@@ -114,12 +114,12 @@ $ aws-ip-provisioner \
         )
         .arg(
             Arg::new("FIND_REUSABLE_RETRIES")
-                .long("describe-local-retries")
+                .long("find-reusable-retries")
                 .help("Sets the number of describe call retries until it finds one before creating one")
                 .required(false)
                 .value_parser(value_parser!(usize))
                 .num_args(1)
-                .default_value("10"),
+                .default_value("5"),
         )
         .arg(
             Arg::new("MOUNTED_EIP_FILE_PATH")
@@ -163,7 +163,7 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
     );
 
     let sleep_sec = if opts.initial_wait_random_seconds > 0 {
-        opts.initial_wait_random_seconds + (random_manager::u32() % 60)
+        opts.initial_wait_random_seconds + (random_manager::u32() % 30)
     } else {
         10
     };

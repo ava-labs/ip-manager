@@ -30,7 +30,7 @@ async fn main() -> io::Result<()> {
 
     let find_reusable_retries = matches
         .get_one::<usize>("FIND_REUSABLE_RETRIES")
-        .unwrap_or(&10)
+        .unwrap_or(&5)
         .clone();
 
     let mounted_eip_file_path = matches
