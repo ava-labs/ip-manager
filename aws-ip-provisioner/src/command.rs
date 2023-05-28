@@ -61,11 +61,11 @@ $ aws-ip-provisioner \
         .arg(
             Arg::new("INITIAL_WAIT_RANDOM_SECONDS")
                 .long("initial-wait-random-seconds")
-                .help("Sets the maximum number of seconds to wait (value chosen at random with the range)")
+                .help("Sets the maximum number of seconds to wait (value chosen at random with the range, highly recommend setting value >60 because EC2 tags take awhile to pupulate)")
                 .required(false)
                 .num_args(1)
                 .value_parser(value_parser!(u32))
-                .default_value("5"),
+                .default_value("60"),
         )
         .arg(
             Arg::new("ID_TAG_KEY")
@@ -157,9 +157,18 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
         env_logger::Env::default().filter_or(env_logger::DEFAULT_FILTER_ENV, opts.log_level),
     );
     log::info!(
-        "starting 'aws-ip-provisioner' on the region '{}'",
-        opts.region
+        "starting 'aws-ip-provisioner' on the region '{}' with initial wait random seconds '{}'",
+        opts.region,
+        opts.initial_wait_random_seconds
     );
+
+    let sleep_sec = if opts.initial_wait_random_seconds > 0 {
+        opts.initial_wait_random_seconds + (random_manager::u32() % 60)
+    } else {
+        10
+    };
+    log::info!("waiting for random seconds {sleep_sec}");
+    sleep(Duration::from_secs(sleep_sec as u64)).await;
 
     let shared_config =
         aws_manager::load_config(Some(opts.region.clone()), Some(Duration::from_secs(30))).await;
@@ -194,18 +203,6 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
             ErrorKind::Other,
             format!("{} is empty", opts.ec2_tag_asg_name_key),
         ));
-    }
-
-    let sleep_sec = if opts.initial_wait_random_seconds > 0 {
-        random_manager::u32() % opts.initial_wait_random_seconds
-    } else {
-        0
-    };
-    if sleep_sec > 0 {
-        log::info!("waiting for random seconds {}", sleep_sec);
-        sleep(Duration::from_secs(sleep_sec as u64)).await;
-    } else {
-        log::info!("skipping random sleep...");
     }
 
     log::info!(
