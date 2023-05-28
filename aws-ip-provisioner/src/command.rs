@@ -182,21 +182,27 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
     })?;
 
     log::info!("fetching the tag value for {}", opts.ec2_tag_asg_name_key);
-    let tags = ec2_manager
-        .fetch_tags(&ec2_instance_id)
-        .await
-        .map_err(|e| Error::new(ErrorKind::Other, format!("failed fetch_tags {}", e)))?;
-
     let mut asg_tag_value = String::new();
-    for c in tags {
-        let k = c.key().unwrap();
-        let v = c.value().unwrap();
+    for i in 0..10 {
+        log::info!("[{i}] fetching tags until ec2_tag_asg_name_key is found");
+        let tags = ec2_manager
+            .fetch_tags(&ec2_instance_id)
+            .await
+            .map_err(|e| Error::new(ErrorKind::Other, format!("failed fetch_tags {}", e)))?;
+        for c in tags {
+            let k = c.key().unwrap();
+            let v = c.value().unwrap();
 
-        log::info!("EC2 tag key='{}', value='{}'", k, v);
-        if k == opts.ec2_tag_asg_name_key {
-            asg_tag_value = v.to_string();
+            log::info!("EC2 tag key='{}', value='{}'", k, v);
+            if k == opts.ec2_tag_asg_name_key {
+                asg_tag_value = v.to_string();
+                break;
+            }
+        }
+        if !asg_tag_value.is_empty() {
             break;
         }
+        sleep(Duration::from_secs(5)).await;
     }
     if asg_tag_value.is_empty() {
         return Err(Error::new(
