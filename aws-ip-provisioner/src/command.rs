@@ -183,7 +183,7 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
 
     log::info!("fetching the tag value for {}", opts.ec2_tag_asg_name_key);
     let mut asg_tag_value = String::new();
-    for i in 0..10 {
+    for i in 0..30 {
         log::info!("[{i}] fetching tags until ec2_tag_asg_name_key is found");
         let tags = ec2_manager
             .fetch_tags(&ec2_instance_id)
@@ -202,7 +202,7 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
         if !asg_tag_value.is_empty() {
             break;
         }
-        sleep(Duration::from_secs(5)).await;
+        sleep(Duration::from_secs(10)).await;
     }
     if asg_tag_value.is_empty() {
         return Err(Error::new(
