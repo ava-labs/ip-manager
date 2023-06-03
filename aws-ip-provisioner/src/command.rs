@@ -66,7 +66,7 @@ $ aws-ip-provisioner \
                 .required(false)
                 .num_args(1)
                 .value_parser(value_parser!(u32))
-                .default_value("20"),
+                .default_value("10"),
         )
         .arg(
             Arg::new("ID_TAG_KEY")
@@ -173,7 +173,7 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
     );
 
     let sleep_sec = if opts.initial_wait_random_seconds > 0 {
-        opts.initial_wait_random_seconds + (random_manager::u32() % 20)
+        opts.initial_wait_random_seconds + (random_manager::u32() % 10)
     } else {
         10
     };
