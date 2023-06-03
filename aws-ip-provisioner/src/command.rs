@@ -1,7 +1,8 @@
 use std::{
     collections::HashMap,
     env,
-    io::{self, Error, ErrorKind},
+    fs::File,
+    io::{self, Error, ErrorKind, Write},
     path::Path,
 };
 
@@ -125,9 +126,17 @@ $ aws-ip-provisioner \
             Arg::new("MOUNTED_EIP_FILE_PATH")
                 .long("mounted-eip-file-path")
                 .help("Sets the file path to store Elastic IP information mapped to this volume path")
-                .required(true)
+                .required(false)
                 .num_args(1)
                 .default_value("/data/eip.yaml"),
+        )
+        .arg(
+            Arg::new("CURRENT_EIP_ALLOCATION_ID_FILE_PATH")
+                .long("current-eip-allocation-id-file-path")
+                .help("Sets the file path to write the Elastic IP allocation ID (useful for paused instances)")
+                .required(false)
+                .num_args(1)
+                .default_value("/data/current_eip_allocation_id"),
         )
 }
 
@@ -147,6 +156,7 @@ pub struct Flags {
     pub find_reusable_retries: usize,
 
     pub mounted_eip_file_path: String,
+    pub current_eip_allocation_id_file_path: String,
 }
 
 pub async fn execute(opts: Flags) -> io::Result<()> {
@@ -251,6 +261,20 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
             })?
     };
     eip.sync(&opts.mounted_eip_file_path)?;
+
+    let current_eip_allocation_id_file_path = Path::new(&opts.current_eip_allocation_id_file_path);
+    log::info!(
+        "writing EIP allocation ID '{}' to '{}'",
+        eip.allocation_id,
+        current_eip_allocation_id_file_path.display()
+    );
+    let mut f = File::create(current_eip_allocation_id_file_path)?;
+    f.write_all(eip.allocation_id.as_bytes())?;
+    log::info!(
+        "wrote EIP allocation ID '{}' to '{}'",
+        eip.allocation_id,
+        current_eip_allocation_id_file_path.display()
+    );
 
     log::info!(
         "checking the instance has already been associated with elastic IP {:?}",

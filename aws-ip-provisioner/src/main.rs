@@ -37,6 +37,10 @@ async fn main() -> io::Result<()> {
         .get_one::<String>("MOUNTED_EIP_FILE_PATH")
         .unwrap_or(&String::from("/data"))
         .clone();
+    let current_eip_allocation_id_file_path = matches
+        .get_one::<String>("CURRENT_EIP_ALLOCATION_ID_FILE_PATH")
+        .unwrap_or(&String::from("/data/current_eip_allocation_id"))
+        .clone();
 
     let opts = command::Flags {
         log_level,
@@ -50,6 +54,7 @@ async fn main() -> io::Result<()> {
         asg_tag_key,
         find_reusable_retries,
         mounted_eip_file_path,
+        current_eip_allocation_id_file_path,
     };
     command::execute(opts).await
 }
