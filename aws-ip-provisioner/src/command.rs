@@ -180,8 +180,12 @@ pub async fn execute(opts: Flags) -> io::Result<()> {
     log::info!("waiting for random seconds {sleep_sec}");
     sleep(Duration::from_secs(sleep_sec as u64)).await;
 
-    let shared_config =
-        aws_manager::load_config(Some(opts.region.clone()), Some(Duration::from_secs(30))).await;
+    let shared_config = aws_manager::load_config(
+        Some(opts.region.clone()),
+        None,
+        Some(Duration::from_secs(30)),
+    )
+    .await;
     let ec2_manager = ec2::Manager::new(&shared_config);
 
     let ec2_instance_id = ec2::metadata::fetch_instance_id().await.map_err(|e| {
